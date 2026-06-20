@@ -1,4 +1,4 @@
-# Valentis website
+# Valentis website.
 
 Marketing site for **Valentis UK Limited** — a boutique virtual CFO / accountancy firm.
 
@@ -41,7 +41,7 @@ npm run preview
 | `src/lib/` | `sanity.ts` (client), `queries.ts` (GROQ), `content.ts` (`getSiteSettings` with fallback), `seo.ts` (JSON-LD), `types.ts`, `siteSettings.data.json` (source of truth). |
 | `studio/` | Sanity Studio: `siteSettings` singleton schema + reusable objects. |
 | `scripts/copy-fonts.mjs` | Copies font woff2 from `@fontsource` to `public/fonts` (postinstall). |
-| `scripts/seed.mjs` | Writes the verbatim `siteSettings` singleton into Sanity. |
+| `scripts/seed.mjs` | Writes the verbatim `siteSettings` singleton into Sanity.
 
 ## Sanity
 
