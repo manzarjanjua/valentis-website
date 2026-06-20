@@ -1,0 +1,14 @@
+# Cloudflare Pages headers — long-cache fingerprinted + static assets.
+# https://developers.cloudflare.com/pages/configuration/headers/
+
+# Astro's hashed build assets never change under the same name.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Self-hosted fonts (stable filenames).
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Images served from /public.
+/images/*
+  Cache-Control: public, max-age=86400
