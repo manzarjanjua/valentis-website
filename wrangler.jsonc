@@ -1,0 +1,11 @@
+{
+  // Static-assets-only Worker: serves the Astro static build (dist/) as plain
+  // files. No `main` worker script, no SSR, no Astro server adapter — so images
+  // are the pre-optimized /_astro/*.webp files generated at build time, NOT the
+  // runtime /_image endpoint (which can't run on the Workers runtime).
+  "name": "valentis-website",
+  "compatibility_date": "2026-06-01",
+  "assets": {
+    "directory": "./dist"
+  }
+}
