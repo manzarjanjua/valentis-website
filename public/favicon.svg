@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Valentis">
+  <rect width="64" height="64" rx="14" fill="#011013" />
+  <text x="50%" y="52%" dy="0.02em" text-anchor="middle" dominant-baseline="central"
+    font-family="Montserrat, Arial, sans-serif" font-weight="700" font-size="34" fill="#FFFFFF">V</text>
+  <circle cx="46" cy="44" r="4" fill="#F15A29" />
+</svg>

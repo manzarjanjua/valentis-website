@@ -1,0 +1,130 @@
+---
+import Section from '../primitives/Section.astro';
+import Eyebrow from '../primitives/Eyebrow.astro';
+import type { ContactContent } from '../../lib/types';
+
+interface Props {
+  content: ContactContent;
+}
+
+const { content } = Astro.props;
+const { eyebrow, heading, subheading, phone, email, location } = content;
+
+const telHref = `tel:${phone.replace(/\s+/g, '')}`;
+const mailHref = `mailto:${email}`;
+const mapsHref = `https://maps.google.com/?q=${encodeURIComponent(location)}`;
+
+const channels = [
+  {
+    label: 'Phone',
+    value: phone,
+    href: telHref,
+    icon: 'M2 5.5C2 4 3 3 4.5 3H6c.6 0 1.1.4 1.3 1l1 3c.2.6 0 1.2-.5 1.5L6.5 9.5c1 2 2.5 3.5 4.5 4.5l1-1.3c.3-.5 1-.7 1.5-.5l3 1c.6.2 1 .7 1 1.3V16c0 1.5-1 2.5-2.5 2.5C8.5 18.5 2 12 2 5.5Z',
+  },
+  {
+    label: 'Email',
+    value: email,
+    href: mailHref,
+    icon: 'M3 5h18v14H3V5Zm0 1.5L12 13l9-6.5',
+  },
+  {
+    label: 'Location',
+    value: location,
+    href: mapsHref,
+    external: true,
+    icon: 'M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Zm0-8.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z',
+  },
+];
+---
+
+<Section id="contact" variant="surface" ariaLabelledby="contact-title">
+  <div class="grid gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
+    {/* Left: heading, sub-heading and contact info beneath */}
+    <div>
+      <header class="max-w-xl">
+        <Eyebrow>{eyebrow}</Eyebrow>
+        <h2 id="contact-title" class="mt-4 text-h2 font-bold">{heading}</h2>
+        <p class="mt-4 text-lead text-muted">{subheading}</p>
+      </header>
+
+      <ul class="mt-8 grid gap-4">
+        {
+          channels.map((c) => (
+            <li>
+              <a
+                href={c.href}
+                class="group flex items-start gap-4 rounded-lg border border-border bg-surface-2 p-5 transition-colors hover:border-brand-orange/40 hover:bg-brand-orange-soft"
+                rel={c.external ? 'noopener noreferrer' : undefined}
+                target={c.external ? '_blank' : undefined}
+              >
+                <span
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-brand-orange text-white"
+                  aria-hidden="true"
+                >
+                  <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d={c.icon} />
+                  </svg>
+                </span>
+                <span class="min-w-0">
+                  <span class="block font-heading text-eyebrow font-semibold uppercase tracking-[0.14em] text-muted">
+                    {c.label}
+                  </span>
+                  <span class="mt-1 block break-words text-h4 font-medium text-ink transition-colors group-hover:text-brand-orange">
+                    {c.value}
+                  </span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    {/* Right: embedded enquiry form. The src is assigned from data-src once the
+        form scrolls into view, so it always initialises while visible. */}
+    <div class="overflow-hidden rounded-xl border border-border bg-surface-2 shadow-soft">
+      <iframe
+        data-src="https://api.leadconnectorhq.com/widget/form/C1b4Zc7OwEgvYTLkQGVo"
+        style="width:100%;height:640px;border:none;border-radius:12px;display:block"
+        id="inline-C1b4Zc7OwEgvYTLkQGVo"
+        data-layout="{'id':'INLINE'}"
+        data-trigger-type="alwaysShow"
+        data-trigger-value=""
+        data-activation-type="alwaysActivated"
+        data-activation-value=""
+        data-deactivation-type="neverDeactivate"
+        data-deactivation-value=""
+        data-form-name="Valentis 2.0 Website Form"
+        data-height="553"
+        data-layout-iframe-id="inline-C1b4Zc7OwEgvYTLkQGVo"
+        data-form-id="C1b4Zc7OwEgvYTLkQGVo"
+        title="Valentis 2.0 Website Form"></iframe>
+    </div>
+  </div>
+</Section>
+
+<script>
+  // Load the enquiry form when it nears the viewport (reliable + not on initial paint).
+  const frame = document.getElementById('inline-C1b4Zc7OwEgvYTLkQGVo') as HTMLIFrameElement | null;
+  function loadFrame() {
+    if (frame && !frame.src && frame.dataset.src) frame.src = frame.dataset.src;
+  }
+  if (frame) {
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries, obs) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              loadFrame();
+              obs.disconnect();
+            }
+          }
+        },
+        { rootMargin: '500px' }
+      );
+      io.observe(frame);
+    } else {
+      loadFrame();
+    }
+  }
+</script>

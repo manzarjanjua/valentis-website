@@ -1,0 +1,15 @@
+---
+/**
+ * Container — centres content at the max content width with fluid gutters.
+ */
+interface Props {
+  as?: keyof HTMLElementTagNameMap;
+  class?: string;
+}
+
+const { as: Tag = 'div', class: className = '' } = Astro.props;
+---
+
+<Tag class:list={['mx-auto w-full max-w-content px-gutter', className]}>
+  <slot />
+</Tag>

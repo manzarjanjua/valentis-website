@@ -1,0 +1,82 @@
+---
+import { Image } from 'astro:assets';
+import Container from '../primitives/Container.astro';
+import Button from '../primitives/Button.astro';
+import banner from '../../assets/hero/banner.png';
+import type { HeroContent } from '../../lib/types';
+
+interface Props {
+  content: HeroContent;
+}
+
+const { content } = Astro.props;
+const { heading, subheading, bodyLines, primaryCta, secondaryCta } = content;
+---
+
+{/*
+  LCP section. The brand banner is the base background image; the engineered
+  dark-navy gradient + grid sit on top as a semi-transparent overlay, so the
+  image stays faintly visible while text contrast (white on dark) is preserved.
+  The <h1> text is the LCP element.
+*/}
+<section class="hero relative overflow-hidden bg-ink-2 text-white" aria-labelledby="hero-heading">
+  <Image
+    src={banner}
+    alt=""
+    aria-hidden="true"
+    widths={[768, 1280, 1920]}
+    sizes="100vw"
+    format="webp"
+    quality={55}
+    loading="eager"
+    decoding="async"
+    fetchpriority="low"
+    class="hero__banner pointer-events-none absolute inset-0 h-full w-full object-cover"
+  />
+  <div class="hero__overlay" aria-hidden="true"></div>
+
+  <Container class="relative py-section md:py-28 lg:py-36">
+    <div class="max-w-3xl">
+      <h1 id="hero-heading" class="text-h1 font-bold text-white">{heading}</h1>
+
+      <p class="mt-5 text-lead font-medium text-white/90">{subheading}</p>
+
+      <div class="mt-7 max-w-2xl space-y-3 text-white/75">
+        {bodyLines.map((line) => <p>{line}</p>)}
+      </div>
+
+      <div class="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <Button href={primaryCta.href} variant="primary" size="lg">{primaryCta.label}</Button>
+        <Button href={secondaryCta.href} variant="secondary" size="lg" onDark>
+          {secondaryCta.label}
+        </Button>
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  /* Layered radial + linear gradients and a faint engineered grid for a
+     premium financial-services feel. Decorative only. */
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+    /* Semi-transparent so the banner underneath stays faintly visible. */
+    background:
+      radial-gradient(60% 70% at 85% 10%, rgba(241, 90, 41, 0.18), transparent 60%),
+      radial-gradient(50% 60% at 10% 90%, rgba(241, 90, 41, 0.1), transparent 55%),
+      linear-gradient(160deg, rgba(10, 22, 34, 0.92) 0%, rgba(17, 24, 39, 0.93) 45%, rgba(1, 16, 19, 0.96) 100%);
+  }
+
+  .hero__overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(80% 80% at 70% 20%, #000 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(80% 80% at 70% 20%, #000 30%, transparent 75%);
+  }
+</style>

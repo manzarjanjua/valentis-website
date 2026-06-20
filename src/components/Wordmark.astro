@@ -1,0 +1,43 @@
+---
+/**
+ * Valentis wordmark — "VALENTIS" with the trailing period in brand orange.
+ * Used in the header and footer.
+ */
+interface Props {
+  text?: string;
+  href?: string;
+  class?: string;
+  /** Use white text on dark surfaces (footer). */
+  onDark?: boolean;
+  /** Accessible label for the link/word. */
+  label?: string;
+}
+
+const {
+  text = 'VALENTIS',
+  href,
+  class: className = '',
+  onDark = false,
+  label = 'Valentis — home',
+} = Astro.props;
+
+const wordClass = [
+  'font-heading font-bold tracking-tight leading-none',
+  onDark ? 'text-white' : 'text-ink',
+  className,
+];
+---
+
+{
+  href ? (
+    <a href={href} class:list={['inline-flex items-baseline no-underline', wordClass]} aria-label={label}>
+      <span>{text}</span>
+      <span class="text-brand-orange" aria-hidden="true">.</span>
+    </a>
+  ) : (
+    <span class:list={['inline-flex items-baseline', wordClass]}>
+      <span>{text}</span>
+      <span class="text-brand-orange" aria-hidden="true">.</span>
+    </span>
+  )
+}

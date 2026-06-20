@@ -1,0 +1,24 @@
+---
+import Section from '../primitives/Section.astro';
+import Button from '../primitives/Button.astro';
+import type { CtaBandContent } from '../../lib/types';
+
+interface Props {
+  content: CtaBandContent;
+  id?: string;
+}
+
+const { content, id } = Astro.props;
+const { heading, body, cta } = content;
+const titleId = id ? `${id}-title` : undefined;
+---
+
+<Section id={id} variant="ink" ariaLabelledby={titleId}>
+  <div class="mx-auto max-w-3xl text-center">
+    <h2 id={titleId} class="text-h2 font-bold text-white">{heading}</h2>
+    <p class="mx-auto mt-4 max-w-xl text-white/75">{body}</p>
+    <div class="mt-8 flex justify-center">
+      <Button href={cta.href} variant="primary" size="lg">{cta.label}</Button>
+    </div>
+  </div>
+</Section>

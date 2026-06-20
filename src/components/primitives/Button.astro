@@ -1,0 +1,70 @@
+---
+/**
+ * Button — primary/secondary CTA. Renders an <a> when `href` is set, otherwise
+ * a <button>. Hover/active use transform + colour only (no layout shift), and
+ * respects prefers-reduced-motion via the global base layer.
+ */
+type Variant = 'primary' | 'secondary' | 'ghost';
+type Size = 'md' | 'lg';
+
+interface Props {
+  href?: string;
+  variant?: Variant;
+  size?: Size;
+  type?: 'button' | 'submit' | 'reset';
+  class?: string;
+  /** Apply when the button sits on a dark (ink) surface. */
+  onDark?: boolean;
+  rel?: string;
+  target?: string;
+  ariaLabel?: string;
+  /** Any extra attributes (id, data-*, aria-*) are forwarded to the element. */
+  [attr: string]: unknown;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  type = 'button',
+  class: className = '',
+  onDark = false,
+  rel,
+  target,
+  ariaLabel,
+  ...rest
+} = Astro.props;
+
+const base =
+  'inline-flex items-center justify-center gap-2 rounded-md font-heading font-semibold leading-none text-center no-underline transition duration-200 ease-[var(--ease-out-soft)] motion-safe:hover:-translate-y-0.5 will-change-transform';
+
+const sizes: Record<Size, string> = {
+  md: 'px-5 py-3 text-[0.95rem]',
+  lg: 'px-7 py-4 text-base',
+};
+
+const variants: Record<Variant, string> = {
+  primary:
+    'bg-brand-orange text-white shadow-soft hover:bg-[#d94e22] hover:shadow-card active:translate-y-0',
+  secondary: onDark
+    ? 'bg-white/10 text-white ring-1 ring-inset ring-white/30 hover:bg-white/20'
+    : 'bg-surface text-ink ring-1 ring-inset ring-border hover:ring-ink/30 hover:bg-surface-2',
+  ghost: onDark
+    ? 'text-white hover:text-brand-orange'
+    : 'text-ink hover:text-brand-orange',
+};
+
+const classes = [base, sizes[size], variants[variant], className];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes} rel={rel} target={target} aria-label={ariaLabel} {...rest}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} class:list={classes} aria-label={ariaLabel} {...rest}>
+      <slot />
+    </button>
+  )
+}

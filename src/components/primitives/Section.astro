@@ -1,0 +1,64 @@
+---
+import Container from './Container.astro';
+
+/**
+ * Section — a vertical band with consistent rhythm and a surface variant.
+ * Wraps its content in a Container by default (set `bleed` to opt out, e.g.
+ * for full-width media).
+ */
+type Variant = 'surface' | 'surface-2' | 'soft' | 'ink';
+type SpaceSize = 'default' | 'sm' | 'none';
+
+interface Props {
+  as?: keyof HTMLElementTagNameMap;
+  variant?: Variant;
+  space?: SpaceSize;
+  /** When true, render children full-width without the inner Container. */
+  bleed?: boolean;
+  id?: string;
+  class?: string;
+  ariaLabel?: string;
+  ariaLabelledby?: string;
+}
+
+const {
+  as: Tag = 'section',
+  variant = 'surface',
+  space = 'default',
+  bleed = false,
+  id,
+  class: className = '',
+  ariaLabel,
+  ariaLabelledby,
+} = Astro.props;
+
+const variantClass: Record<Variant, string> = {
+  surface: 'bg-surface text-ink',
+  'surface-2': 'bg-surface-2 text-ink',
+  soft: 'bg-brand-orange-soft text-ink',
+  ink: 'bg-ink-2 text-white',
+};
+
+const spaceClass: Record<SpaceSize, string> = {
+  default: 'py-section',
+  sm: 'py-section-sm',
+  none: '',
+};
+---
+
+<Tag
+  id={id}
+  class:list={[variantClass[variant], spaceClass[space], className]}
+  aria-label={ariaLabel}
+  aria-labelledby={ariaLabelledby}
+>
+  {
+    bleed ? (
+      <slot />
+    ) : (
+      <Container>
+        <slot />
+      </Container>
+    )
+  }
+</Tag>

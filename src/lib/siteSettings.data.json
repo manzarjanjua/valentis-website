@@ -1,0 +1,36 @@
+{
+  "logoText": "VALENTIS",
+  "tagline": "Bespoke. Intelligent. Accountancy.",
+  "nav": [
+    { "label": "Industries", "href": "/industries" },
+    { "label": "Stories", "href": "/stories" },
+    { "label": "About", "href": "/about" },
+    { "label": "Resources", "href": "/resources" }
+  ],
+  "headerCta": { "label": "Book a Discovery Call", "href": "#contact" },
+  "social": [
+    { "platform": "LinkedIn", "href": "https://www.linkedin.com/company/valentis-uk" },
+    { "platform": "X", "href": "https://twitter.com/valentisuk" },
+    { "platform": "Facebook", "href": "https://www.facebook.com/valentisuk" },
+    { "platform": "Instagram", "href": "https://www.instagram.com/valentisuk" }
+  ],
+  "quickLinks": [
+    { "label": "Services", "href": "#services" },
+    { "label": "Why Us", "href": "#why-us" },
+    { "label": "Team", "href": "#team" },
+    { "label": "Contact", "href": "#contact" },
+    { "label": "Industries", "href": "/industries" },
+    { "label": "News", "href": "/news" }
+  ],
+  "phone": "+44 20 3371 8844",
+  "email": "info@valentis.co.uk",
+  "address": {
+    "street": "6-8 Great Eastern Street",
+    "city": "London",
+    "region": "",
+    "postalCode": "EC2A 3NT",
+    "country": "United Kingdom",
+    "countryCode": "GB"
+  },
+  "copyright": "© Copyrights 2025 Valentis UK Limited. All rights reserved."
+}

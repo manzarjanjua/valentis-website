@@ -1,0 +1,90 @@
+---
+import Section from '../primitives/Section.astro';
+import Eyebrow from '../primitives/Eyebrow.astro';
+import type { ProcessContent } from '../../lib/types';
+
+interface Props {
+  content: ProcessContent;
+}
+
+const { content } = Astro.props;
+const { eyebrow, title, steps } = content;
+
+// One lightweight inline SVG per step (inner markup; stroke icons in brand
+// orange). Order matches the 5 steps in CLAUDE.md §3.3.
+const stepIcons: string[] = [
+  // 1 — Understand the Business (search)
+  '<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  // 2 — Build Financial Control (bar chart)
+  '<line x1="6" y1="20" x2="6" y2="13"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="9"/>',
+  // 3 — Turn Data into Decisions (lightbulb)
+  '<path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.1 13.5c.3-1 .9-1.8 1.7-2.6A5.5 5.5 0 1 0 6.5 8c0 2 .9 3 1.7 3.9.8.8 1.4 1.6 1.7 2.6"/>',
+  // 4 — Act Like Your CFO (people)
+  '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  // 5 — Stay Close as You Scale (trending up)
+  '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+];
+---
+
+<Section id="process" variant="surface-2" bleed ariaLabelledby="process-title">
+  {/* Wider container than the rest of the site so 5 cards stay balanced. */}
+  <div class="mx-auto w-full max-w-[1600px] px-gutter">
+    <header class="max-w-2xl">
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <h2 id="process-title" class="mt-4 text-h2 font-bold">{title}</h2>
+    </header>
+
+    {/* One row of 5 cards on desktop; 2 columns on tablet, 1 on mobile. */}
+    <ol class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5 lg:mt-16">
+      {
+        steps.map((step, i) => (
+          <li class="flex">
+            <div class="flex flex-1 flex-col rounded-xl border border-border bg-surface p-6 shadow-soft transition duration-200 ease-[var(--ease-out-soft)] motion-safe:hover:-translate-y-1 hover:shadow-card">
+              {/* Themed icon tile (replaces the step number) */}
+              <span
+                class="flex h-14 w-14 items-center justify-center rounded-lg bg-brand-orange-soft text-brand-orange"
+                aria-hidden="true"
+              >
+                <svg
+                  class="h-7 w-7"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  set:html={stepIcons[i]}
+                />
+              </span>
+
+              <p class="mt-6 font-heading text-eyebrow font-semibold uppercase tracking-[0.14em] text-brand-orange">
+                {step.stepLabel}
+              </p>
+              {/* Reserve 2 title lines / 3 description lines (em-based, so it
+                  tracks the fluid font size) to keep all cards' rows aligned. */}
+              <h3 class="mt-2 text-h4 font-semibold sm:min-h-[2.6em]">{step.title}</h3>
+              <p class="mt-3 text-small text-muted sm:min-h-[4.65em]">{step.description}</p>
+
+              <ul class="mt-5 flex-1 space-y-2.5">
+                {step.bullets.map((bullet) => (
+                  <li class="flex items-center gap-2.5 text-small">
+                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-brand-orange" aria-hidden="true" />
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+
+              {/* Label above the value so the value stays on a single line. */}
+              <div class="mt-6 rounded-md bg-brand-orange-soft px-4 py-3">
+                <span class="block font-heading text-eyebrow font-semibold uppercase tracking-[0.14em] text-brand-orange">
+                  Outcome
+                </span>
+                <span class="mt-1 block text-small font-medium text-ink">{step.outcome}</span>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</Section>
