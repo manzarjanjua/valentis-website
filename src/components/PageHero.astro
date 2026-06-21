@@ -1,0 +1,133 @@
+---
+/**
+ * PageHero — the shared dark-navy page header used by inner pages (About,
+ * Stories, Case studies …). Same engineered gradient + faint grid as the home
+ * hero, minus the photo. Breadcrumb, eyebrow, H1 and an optional subheading;
+ * CTAs are passed via the default slot, and an optional `aside` slot renders a
+ * panel beside the text (e.g. a client logo card).
+ */
+import Container from './primitives/Container.astro';
+import Eyebrow from './primitives/Eyebrow.astro';
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  eyebrow: string;
+  heading: string;
+  subheading?: string;
+  /** Trailing breadcrumb label, e.g. "About". Ignored when `crumbs` is set. */
+  breadcrumbLabel?: string;
+  /** Full breadcrumb trail; overrides `breadcrumbLabel`. */
+  crumbs?: Crumb[];
+  /** id for the H1 so the section can be aria-labelledby it. */
+  headingId?: string;
+}
+
+const {
+  eyebrow,
+  heading,
+  subheading,
+  breadcrumbLabel,
+  crumbs,
+  headingId = 'page-hero-heading',
+} = Astro.props;
+
+const hasCta = Astro.slots.has('default');
+const hasAside = Astro.slots.has('aside');
+
+const trail: Crumb[] =
+  crumbs ?? [{ label: 'Home', href: '/' }, { label: breadcrumbLabel ?? '' }];
+---
+
+<section
+  class="page-hero relative overflow-hidden bg-ink-2 text-white"
+  aria-labelledby={headingId}
+>
+  <div class="page-hero__overlay" aria-hidden="true"></div>
+
+  <Container class="relative">
+    <div class="flex min-h-[56vh] flex-col justify-center py-section md:min-h-[60vh] md:py-28">
+      <nav aria-label="Breadcrumb">
+        <ol class="flex flex-wrap items-center gap-2 text-small text-white/55">
+          {
+            trail.map((c, i) => (
+              <>
+                {i > 0 && (
+                  <li aria-hidden="true" class="text-white/30">
+                    /
+                  </li>
+                )}
+                <li>
+                  {c.href ? (
+                    <a href={c.href} class="transition-colors hover:text-white">
+                      {c.label}
+                    </a>
+                  ) : (
+                    <span class="text-white/80" aria-current="page">
+                      {c.label}
+                    </span>
+                  )}
+                </li>
+              </>
+            ))
+          }
+        </ol>
+      </nav>
+
+      <div
+        class:list={[
+          'mt-10 grid items-center gap-10 lg:gap-16',
+          hasAside && 'lg:grid-cols-12',
+        ]}
+      >
+        <div class:list={[hasAside ? 'lg:col-span-8' : 'max-w-4xl']}>
+          <Eyebrow rule={false}>{eyebrow}</Eyebrow>
+          <h1 id={headingId} class="mt-5 max-w-3xl text-h1 font-bold text-white">{heading}</h1>
+          {subheading && <p class="mt-6 max-w-2xl text-lead text-white/80">{subheading}</p>}
+
+          {
+            hasCta && (
+              <div class="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <slot />
+              </div>
+            )
+          }
+        </div>
+
+        {
+          hasAside && (
+            <div class="lg:col-span-4">
+              <slot name="aside" />
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </Container>
+</section>
+
+<style>
+  .page-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(60% 70% at 85% 5%, rgba(241, 90, 41, 0.16), transparent 60%),
+      radial-gradient(50% 60% at 5% 95%, rgba(241, 90, 41, 0.09), transparent 55%),
+      linear-gradient(160deg, #0a1622 0%, #111827 45%, #011013 100%);
+  }
+
+  .page-hero__overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(80% 80% at 75% 15%, #000 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(80% 80% at 75% 15%, #000 30%, transparent 75%);
+  }
+</style>

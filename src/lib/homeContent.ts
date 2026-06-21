@@ -234,15 +234,6 @@ export const homeContent: HomeContent = {
     ],
   },
 
-  contact: {
-    eyebrow: "LET'S GET STARTED",
-    heading: 'Need a Smarter Finance Setup?',
-    subheading: 'Arrange your discovery meeting today and unlock the potential of your business.',
-    phone: '+44 20 3371 8844',
-    email: 'info@valentis.co.uk',
-    location: '6-8 Great Eastern Street, London, EC2A 3NT',
-  },
-
   finalCta: {
     heading: 'Ready to Stop Guessing With Your Finances?',
     body: "Let's talk about how we can help you achieve clarity.",

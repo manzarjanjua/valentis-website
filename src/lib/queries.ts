@@ -13,6 +13,7 @@ export const SITE_SETTINGS_QUERY = /* groq */ `
     phone,
     email,
     address{ street, city, region, postalCode, country, countryCode },
+    contact{ eyebrow, heading, subheading },
     copyright
   }
 `;

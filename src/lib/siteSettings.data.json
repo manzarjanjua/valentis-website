@@ -5,7 +5,7 @@
     { "label": "Industries", "href": "/industries" },
     { "label": "Stories", "href": "/stories" },
     { "label": "About", "href": "/about" },
-    { "label": "Resources", "href": "/resources" }
+    { "label": "Resources", "href": "/news" }
   ],
   "headerCta": { "label": "Book a Discovery Call", "href": "#contact" },
   "social": [
@@ -31,6 +31,11 @@
     "postalCode": "EC2A 3NT",
     "country": "United Kingdom",
     "countryCode": "GB"
+  },
+  "contact": {
+    "eyebrow": "LET'S GET STARTED",
+    "heading": "Need a Smarter Finance Setup?",
+    "subheading": "Arrange your discovery meeting today and unlock the potential of your business."
   },
   "copyright": "© Copyrights 2025 Valentis UK Limited. All rights reserved."
 }

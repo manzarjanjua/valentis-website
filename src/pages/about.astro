@@ -1,0 +1,419 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/primitives/Section.astro';
+import Container from '../components/primitives/Container.astro';
+import Eyebrow from '../components/primitives/Eyebrow.astro';
+import Button from '../components/primitives/Button.astro';
+import CheckList from '../components/about/CheckList.astro';
+import { aboutContent as a } from '../lib/aboutContent';
+
+const { hero, positioning, partner, clients, approach, why, trust, cta } = a;
+
+// Breadcrumb JSON-LD (CLAUDE.md §6). Origin mirrors BaseLayout's resolution.
+const siteOrigin = Astro.site?.origin ?? 'https://valentis.co.uk';
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteOrigin}/` },
+    { '@type': 'ListItem', position: 2, name: 'About', item: `${siteOrigin}/about` },
+  ],
+};
+
+// Stroke-icon path sets (24×24 viewBox) for the "Why Valentis" reasons,
+// one per item in order.
+const whyIcons: string[] = [
+  // Think like business owners (briefcase)
+  '<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/>',
+  // CFO-level insight without full-time cost (trending up)
+  '<polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/>',
+  // Speak plainly and challenge (chat bubble)
+  '<path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.9-.9L3 21l1.9-5.6A8.4 8.4 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.4 8.4 0 0 1 21 11.5Z"/>',
+  // Build long-term relationships (trust / heart)
+  '<path d="M12 21s-7-4.5-7-11a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 6.5-7 11-7 11Z"/>',
+];
+
+// Stroke-icon path sets (24×24 viewBox) for the "Regulated & trusted" cards.
+const trustIcons: string[] = [
+  // Professional regulation (shield + check)
+  '<path d="M12 3l8 3v5c0 5-3.4 8.3-8 9.5C7.4 19.3 4 16 4 11V6l8-3Z"/><path d="m9 11.5 2 2 4-4"/>',
+  // Internal controls & governance (lock)
+  '<rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/>',
+  // Modern systems (monitor / accuracy)
+  '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="m8 11 2.5 2.5L16 8"/>',
+];
+---
+
+<BaseLayout title={a.seo.title} description={a.seo.description}>
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(breadcrumbLd)}
+  />
+
+  {/* ───────────────────────── Hero ─────────────────────────
+      Deliberately spare: eyebrow, headline, one intro line, CTAs. The
+      positioning statement lives in its own section below so nothing crowds. */}
+  <section
+    class="about-hero relative overflow-hidden bg-ink-2 text-white"
+    aria-labelledby="about-hero-heading"
+  >
+    <div class="about-hero__overlay" aria-hidden="true"></div>
+
+    <Container class="relative">
+      <div class="flex min-h-[58vh] flex-col justify-center py-section md:min-h-[64vh] md:py-28">
+        <nav aria-label="Breadcrumb">
+          <ol class="flex items-center gap-2 text-small text-white/55">
+            <li><a href="/" class="transition-colors hover:text-white">Home</a></li>
+            <li aria-hidden="true" class="text-white/30">/</li>
+            <li class="text-white/80" aria-current="page">About</li>
+          </ol>
+        </nav>
+
+        <div class="mt-10 max-w-4xl">
+          <Eyebrow rule={false}>{hero.eyebrow}</Eyebrow>
+          <h1 id="about-hero-heading" class="mt-5 max-w-3xl text-h1 font-bold text-white">
+            {hero.heading}
+          </h1>
+          <p class="mt-7 max-w-2xl text-lead text-white/80">{hero.lead}</p>
+
+          <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button
+              variant="primary"
+              size="lg"
+              data-booking-toggle
+              aria-controls="booking-panel"
+              aria-expanded="false"
+            >
+              {hero.primaryCta.label}
+            </Button>
+            <Button href={hero.secondaryCta.href} variant="secondary" size="lg" onDark>
+              {hero.secondaryCta.label}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </section>
+
+  {/* ──────────────── What we stand for (positioning) ────────────────
+      A focused editorial band: the two disqualifiers as quiet "not" cards,
+      then the positioning statement as the climax. */}
+  <Section id="stand-for" variant="surface" ariaLabelledby="stand-title">
+    <div class="mx-auto max-w-4xl">
+      <div class="text-center">
+        <Eyebrow class="justify-center">{positioning.eyebrow}</Eyebrow>
+      </div>
+
+      <div class="mt-9 grid gap-4 sm:grid-cols-2">
+        {
+          positioning.notItems.map((line) => (
+            <div class="flex items-center gap-4 rounded-lg border border-border bg-surface-2 px-6 py-5">
+              <span
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-surface text-muted"
+                aria-hidden="true"
+              >
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                  <line x1="6" y1="18" x2="18" y2="6" />
+                </svg>
+              </span>
+              <span class="font-medium text-ink">{line}</span>
+            </div>
+          ))
+        }
+      </div>
+
+      <p
+        id="stand-title"
+        class="mx-auto mt-10 max-w-3xl text-center text-h3 font-semibold text-ink"
+      >
+        {positioning.statement}
+      </p>
+    </div>
+  </Section>
+
+  {/* ──────────── More than compliance / Your partner ────────────
+      Layout A — statement left, supporting checklist card right. */}
+  <Section id="purpose" variant="surface-2" ariaLabelledby="purpose-title">
+    <div class="grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-16">
+      <div class="lg:col-span-6">
+        <Eyebrow>{partner.eyebrow}</Eyebrow>
+        <h2 id="purpose-title" class="mt-4 text-h2 font-bold">{partner.heading}</h2>
+        <p class="mt-5 text-muted">{partner.intro}</p>
+        <p class="mt-6 border-l-2 border-brand-orange pl-5 text-h4 font-semibold text-ink">
+          {partner.emphasis}
+        </p>
+      </div>
+
+      <div class="lg:col-span-6">
+        <div class="rounded-xl border border-border bg-surface p-7 shadow-card md:p-8">
+          <p class="font-heading text-eyebrow font-semibold uppercase tracking-[0.14em] text-brand-orange">
+            {partner.listTitle}
+          </p>
+          <CheckList class="mt-6" items={partner.items ?? []} />
+        </div>
+      </div>
+    </div>
+
+    <p class="mx-auto mt-12 max-w-3xl text-center text-lead text-muted">
+      {partner.notes?.[0]}
+    </p>
+  </Section>
+
+  {/* ──────────────────── Who we work with ────────────────────
+      Layout B — narrative left, numbered client-profile cards right, then the
+      not-a-fit / a-fit contrast pair. Numbered badges (not checks) keep this
+      section visually distinct from the rest of the page. */}
+  <Section id="clients" variant="ink" ariaLabelledby="clients-title">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+      {/* Narrative */}
+      <div class="lg:col-span-5">
+        <Eyebrow rule={false}>{clients.eyebrow}</Eyebrow>
+        <h2 id="clients-title" class="mt-4 text-h2 font-bold text-white">{clients.heading}</h2>
+        <p class="mt-5 text-white/70">{clients.intro}</p>
+        <p class="mt-5 text-white/70">{clients.notes?.[0]}</p>
+      </div>
+
+      {/* Numbered client-profile cards */}
+      <div class="lg:col-span-7">
+        <p class="font-heading text-eyebrow font-semibold uppercase tracking-[0.14em] text-brand-orange">
+          {clients.listTitle}
+        </p>
+        <ul class="mt-6 grid gap-4 sm:grid-cols-2">
+          {
+            (clients.items ?? []).map((item, i) => (
+              <li class="flex h-full items-start gap-4 rounded-xl border border-white/10 bg-white/[0.04] p-6 transition duration-200 ease-[var(--ease-out-soft)] motion-safe:hover:-translate-y-1 hover:border-white/20">
+                <span
+                  class="font-heading text-h4 font-bold tabular-nums text-brand-orange"
+                  aria-hidden="true"
+                >
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span class="text-white/85">{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    {/* Not-a-fit / a-fit contrast */}
+    <div class="mt-12 grid gap-5 md:grid-cols-2">
+      <div class="flex items-start gap-4 rounded-xl border border-white/10 bg-white/[0.04] p-7">
+        <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/25 text-white/50" aria-hidden="true">
+          <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="6" y1="6" x2="18" y2="18" /><line x1="6" y1="18" x2="18" y2="6" />
+          </svg>
+        </span>
+        <p class="text-white/70">{clients.notFit}</p>
+      </div>
+      <div class="flex items-start gap-4 rounded-xl border border-brand-orange/40 bg-brand-orange/10 p-7">
+        <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-orange text-white" aria-hidden="true">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </span>
+        <p class="font-medium text-white">{clients.fit}</p>
+      </div>
+    </div>
+  </Section>
+
+  {/* ───────────────────────── Our approach ─────────────────────────
+      Layout C — belief pills row, then combines card + closing statement. */}
+  <Section id="approach" variant="surface-2" ariaLabelledby="approach-title">
+    <header class="max-w-2xl">
+      <Eyebrow>{approach.eyebrow}</Eyebrow>
+      <h2 id="approach-title" class="mt-4 text-h2 font-bold">{approach.heading}</h2>
+      <p class="mt-5 text-muted">{approach.intro}</p>
+    </header>
+
+    <div class="mt-10 grid gap-5 sm:grid-cols-3">
+      {
+        approach.beliefs.map((b) => (
+          <div class="rounded-xl border border-border bg-surface p-7 shadow-soft">
+            <span
+              class="flex h-11 w-11 items-center justify-center rounded-md bg-brand-orange-soft text-brand-orange"
+              aria-hidden="true"
+            >
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </span>
+            <p class="mt-5 text-h4 font-semibold text-ink">{b.strong}</p>
+            <p class="mt-1 text-muted">{b.rest}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-12 lg:items-stretch">
+      <div class="lg:col-span-7">
+        <div class="h-full rounded-xl border border-border bg-surface p-7 shadow-soft md:p-8">
+          <p class="font-heading text-eyebrow font-semibold uppercase tracking-[0.14em] text-brand-orange">
+            {approach.listTitle}
+          </p>
+          <CheckList class="mt-6 sm:grid-cols-2 sm:gap-x-10" items={approach.items ?? []} />
+        </div>
+      </div>
+      <div class="lg:col-span-5">
+        <div class="flex h-full items-center rounded-xl border border-brand-orange/20 bg-brand-orange-soft p-7 md:p-8">
+          <p class="text-lead font-medium text-ink">{approach.notes?.[0]}</p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  {/* ───────────────────────── Why Valentis ─────────────────────────
+      Layout D — dark band, editorial split: narrative + integrated pull-quote
+      left, reasons as a divided icon feature-list right. */}
+  <Section id="why-valentis" variant="ink" ariaLabelledby="why-title">
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
+      {/* Narrative + pull-quote */}
+      <div class="lg:col-span-5">
+        <Eyebrow rule={false}>{why.eyebrow}</Eyebrow>
+        <h2 id="why-title" class="mt-4 text-h2 font-bold text-white">{why.heading}</h2>
+        <p class="mt-5 text-white/70">{why.intro}</p>
+
+        <figure class="mt-9 border-l-2 border-brand-orange pl-6">
+          <p class="text-white/55">{why.quoteLead}</p>
+          <blockquote class="mt-2 text-h3 font-bold text-white">{why.quote}</blockquote>
+        </figure>
+      </div>
+
+      {/* Reasons — divided icon feature-list */}
+      <div class="lg:col-span-7">
+        <ul class="divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+          {
+            (why.items ?? []).map((reason, i) => (
+              <li class="flex items-center gap-5 p-6 transition-colors hover:bg-white/[0.04] md:px-8">
+                <span
+                  class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-orange/15 text-brand-orange"
+                  aria-hidden="true"
+                >
+                  <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={whyIcons[i % whyIcons.length]} />
+                </span>
+                <p class="text-lead font-medium text-white/90">{reason}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  {/* ──────────── Regulated, experienced, and trusted ────────────
+      Layout E — centered header, three trust cards, closing reassurance. */}
+  <Section id="trust" variant="surface" ariaLabelledby="trust-title">
+    <header class="mx-auto max-w-2xl text-center">
+      <div class="flex justify-center"><Eyebrow>{trust.eyebrow}</Eyebrow></div>
+      <h2 id="trust-title" class="mt-4 text-h2 font-bold">{trust.heading}</h2>
+      <p class="mt-5 text-muted">{trust.intro}</p>
+    </header>
+
+    <div class="mt-12 grid gap-6 md:grid-cols-3">
+      {
+        (trust.items ?? []).map((item, i) => (
+          <article class="flex h-full flex-col items-center rounded-xl border border-border bg-surface-2 p-8 text-center shadow-soft">
+            <span
+              class="flex h-14 w-14 items-center justify-center rounded-xl bg-brand-orange-soft text-brand-orange"
+              aria-hidden="true"
+            >
+              <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={trustIcons[i % trustIcons.length]} />
+            </span>
+            <p class="mt-6 font-medium text-ink">{item}</p>
+          </article>
+        ))
+      }
+    </div>
+
+    <p class="mx-auto mt-12 max-w-3xl text-center text-lead text-muted">{trust.notes?.[0]}</p>
+  </Section>
+
+  {/* ───────────────────────── Let's talk (CTA) ─────────────────────────
+      Layout F — dark band, split: invitation + action left, qualifiers panel
+      right. Anchored by a soft orange glow for a premium close. */}
+  <Section id="lets-talk" variant="ink" ariaLabelledby="cta-title">
+    <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-8 md:p-12 lg:p-14">
+      <div
+        class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-brand-orange/20 blur-3xl"
+        aria-hidden="true"
+      >
+      </div>
+
+      <div class="relative grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-14">
+        {/* Invitation + action */}
+        <div class="lg:col-span-6">
+          <Eyebrow rule={false}>{cta.eyebrow}</Eyebrow>
+          <h2 id="cta-title" class="mt-4 text-h2 font-bold text-white">{cta.heading}</h2>
+          <p class="mt-5 text-lead font-medium text-white/90">{cta.notes?.[0]}</p>
+
+          <div class="mt-8">
+            <Button
+              variant="primary"
+              size="lg"
+              data-booking-toggle
+              aria-controls="booking-panel"
+              aria-expanded="false"
+            >
+              {cta.primaryCta.label}
+            </Button>
+          </div>
+          <p class="mt-4 text-small text-white/55">{cta.ctaNote}</p>
+        </div>
+
+        {/* Qualifiers panel */}
+        <div class="lg:col-span-6">
+          <div class="rounded-xl border border-white/10 bg-ink-2/60 p-7 md:p-8">
+            <p class="font-heading text-eyebrow font-semibold uppercase tracking-[0.14em] text-brand-orange">
+              {cta.intro}
+            </p>
+            <ul class="mt-6 grid gap-4">
+              {
+                (cta.items ?? []).map((item) => (
+                  <li class="flex items-start gap-3.5 border-b border-white/10 pb-4 last:border-0 last:pb-0">
+                    <span
+                      class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-orange text-white"
+                      aria-hidden="true"
+                    >
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </span>
+                    <span class="text-white/85">{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  /* Same engineered dark-navy treatment as the home hero, minus the photo —
+     a clean gradient + faint grid for a premium, corporate feel. */
+  .about-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(60% 70% at 85% 5%, rgba(241, 90, 41, 0.16), transparent 60%),
+      radial-gradient(50% 60% at 5% 95%, rgba(241, 90, 41, 0.09), transparent 55%),
+      linear-gradient(160deg, #0a1622 0%, #111827 45%, #011013 100%);
+  }
+
+  .about-hero__overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(80% 80% at 75% 15%, #000 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(80% 80% at 75% 15%, #000 30%, transparent 75%);
+  }
+</style>

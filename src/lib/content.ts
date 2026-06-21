@@ -26,6 +26,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       ...data,
       address: { ...defaultSiteSettings.address, ...(data.address ?? {}) },
       headerCta: { ...defaultSiteSettings.headerCta, ...(data.headerCta ?? {}) },
+      contact: { ...defaultSiteSettings.contact, ...(data.contact ?? {}) },
       nav: data.nav?.length ? data.nav : defaultSiteSettings.nav,
       social: data.social?.length ? data.social : defaultSiteSettings.social,
       quickLinks: data.quickLinks?.length ? data.quickLinks : defaultSiteSettings.quickLinks,

@@ -6,7 +6,6 @@ import WhatYouGet from '../components/home/WhatYouGet.astro';
 import BestForCards from '../components/home/BestForCards.astro';
 import ServicesTiles from '../components/home/ServicesTiles.astro';
 import TeamGrid from '../components/home/TeamGrid.astro';
-import ContactSection from '../components/home/ContactSection.astro';
 import CtaBand from '../components/home/CtaBand.astro';
 import { homeContent } from '../lib/homeContent';
 
@@ -32,9 +31,8 @@ const c = homeContent;
   {/* 3.7  Our Team — "Meet the Team" */}
   <TeamGrid content={c.team} />
 
-  {/* 3.8  Get Started / Contact — "Need a Smarter Finance Setup?" */}
-  <ContactSection content={c.contact} />
-
-  {/* 3.9  Final CTA Band — "Ready to Stop Guessing With Your Finances?" */}
+  {/* 3.9  Final CTA Band — "Ready to Stop Guessing With Your Finances?"
+      3.8 Contact ("Need a Smarter Finance Setup?") is now a global pre-footer
+      block rendered by BaseLayout, so it appears on every page. */}
   <CtaBand content={c.finalCta} id="final-cta" />
 </BaseLayout>

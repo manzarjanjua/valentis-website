@@ -1,0 +1,447 @@
+---
+import Section from '../primitives/Section.astro';
+import Button from '../primitives/Button.astro';
+import Eyebrow from '../primitives/Eyebrow.astro';
+import IndustryMarker from './IndustryMarker.astro';
+import type { IndustryBlock } from '../../lib/types';
+
+/**
+ * IndustryBlock — renders one content block of an industry detail page.
+ *
+ * Sections alternate light ↔ dark by their position (`index`) so every sector
+ * page has a clear, premium rhythm. Each block type is given a distinct,
+ * fully-designed layout (tile grids, numbered feature cards, dark "why-us"
+ * bands, framed testimonial, styled accordion, glowing CTA) that adapts to
+ * whichever background it lands on.
+ */
+interface Props {
+  block: IndustryBlock;
+  /** Position in the page; drives the light/dark alternation. */
+  index: number;
+}
+
+const { block, index } = Astro.props;
+
+// First content block is dark (the light intro lead sits above it), then
+// strict alternation guarantees no two adjacent sections share a background.
+const dark = index % 2 === 0;
+
+const sec = dark ? 'ink' : 'surface';
+const tHead = dark ? 'text-white' : 'text-ink';
+const tMuted = dark ? 'text-white/70' : 'text-muted';
+const tBody = dark ? 'text-white/90' : 'text-ink';
+const card = dark ? 'border-white/10 bg-white/[0.04]' : 'border-border bg-surface-2';
+const lift =
+  'transition duration-200 ease-[var(--ease-out-soft)] hover:shadow-card motion-safe:hover:-translate-y-1';
+const ghostNum = dark ? 'text-white/[0.06]' : 'text-ink/[0.04]';
+
+const headingId = `block-${index}-title`;
+
+// Convenience flags for the prose layout.
+const proseHasList =
+  block.type === 'prose' && !!(block.groups?.length || block.bullets?.length);
+
+// Initials for the testimonial avatar (e.g. "Hamed Barik" → "HB").
+const initials =
+  block.type === 'testimonial'
+    ? block.name
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((w) => w[0])
+        .join('')
+        .toUpperCase()
+    : '';
+---
+
+{/* ─────────────────────────────── PROSE ─────────────────────────────── */}
+{
+  block.type === 'prose' && (
+    <Section variant={sec} ariaLabelledby={block.heading ? headingId : undefined}>
+      {proseHasList ? (
+        <Fragment>
+          <header class="max-w-2xl">
+            {block.eyebrow && <Eyebrow rule={!dark}>{block.eyebrow}</Eyebrow>}
+            {block.heading && (
+              <h2 id={headingId} class:list={['text-h2 font-bold', tHead, block.eyebrow && 'mt-4']}>
+                {block.heading}
+              </h2>
+            )}
+            {block.intro && <p class:list={['mt-5', tMuted]}>{block.intro}</p>}
+          </header>
+
+          {/* Titled groups (e.g. Core / CFO services) */}
+          {block.groups && (
+            <div class="mt-12 grid gap-6 sm:grid-cols-2">
+              {block.groups.map((group) => (
+                <div class:list={['rounded-2xl border p-7 md:p-8', card]}>
+                  {group.title && (
+                    <p class="font-heading text-eyebrow font-semibold uppercase tracking-[0.14em] text-brand-orange">
+                      {group.title}
+                    </p>
+                  )}
+                  <ul class="mt-6 grid gap-4">
+                    {group.items.map((item) => (
+                      <li class="flex items-start gap-3.5">
+                        <IndustryMarker tone={block.tone} onDark={dark} />
+                        <span class={tBody}>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Flat bullet list as a tile grid */}
+          {!block.groups && block.bullets && (
+            <ul
+              class:list={[
+                'mt-12 grid gap-4',
+                block.columns === 1 ? 'max-w-3xl' : 'sm:grid-cols-2',
+              ]}
+            >
+              {block.bullets.map((item) => (
+                <li class:list={['flex items-start gap-3.5 rounded-xl border p-5', card, lift]}>
+                  <IndustryMarker tone={block.tone} onDark={dark} />
+                  <span class={tBody}>{item}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* Secondary list introduced after the main bullets */}
+          {block.subIntro && (
+            <p class:list={['mt-10 font-heading font-semibold', tHead]}>{block.subIntro}</p>
+          )}
+          {block.subBullets && (
+            <ul class="mt-5 grid gap-4 sm:grid-cols-3">
+              {block.subBullets.map((item) => (
+                <li class:list={['flex items-start gap-3.5 rounded-xl border p-5', card]}>
+                  <IndustryMarker tone={block.tone} onDark={dark} />
+                  <span class={tBody}>{item}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {block.closing && (
+            <div class:list={['mt-10 rounded-2xl border border-l-4 border-l-brand-orange p-6 md:p-7', card]}>
+              <p class:list={['text-lead font-medium', tBody]}>{block.closing}</p>
+            </div>
+          )}
+        </Fragment>
+      ) : (
+        /* Section opener — heading + intro only, centred */
+        <div class="mx-auto max-w-2xl text-center">
+          {block.eyebrow && (
+            <div class="flex justify-center">
+              <Eyebrow rule={!dark}>{block.eyebrow}</Eyebrow>
+            </div>
+          )}
+          {block.heading && (
+            <h2 id={headingId} class:list={['text-h2 font-bold', tHead, block.eyebrow && 'mt-4']}>
+              {block.heading}
+            </h2>
+          )}
+          {block.intro && <p class:list={['mt-5 text-lead', tMuted]}>{block.intro}</p>}
+        </div>
+      )}
+    </Section>
+  )
+}
+
+{/* ─────────────────────────────── CARDS ─────────────────────────────── */}
+{
+  block.type === 'cards' && (
+    <Section variant={sec} ariaLabelledby={headingId}>
+      <header class="max-w-2xl">
+        {block.eyebrow && <Eyebrow rule={!dark}>{block.eyebrow}</Eyebrow>}
+        <h2 id={headingId} class:list={['text-h2 font-bold', tHead, block.eyebrow && 'mt-4']}>
+          {block.heading}
+        </h2>
+        {block.intro && <p class:list={['mt-5', tMuted]}>{block.intro}</p>}
+      </header>
+
+      <div
+        class:list={[
+          'mt-12 grid gap-6 md:gap-7',
+          block.columns === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3',
+        ]}
+      >
+        {block.items.map((item, i) => (
+          <article class:list={['relative flex h-full flex-col overflow-hidden rounded-2xl border p-7 md:p-8', card, lift]}>
+            <span
+              class:list={['pointer-events-none absolute right-5 top-2 font-heading text-[4rem] font-bold leading-none tabular-nums', ghostNum]}
+              aria-hidden="true"
+            >
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <h3 class:list={['relative text-h4 font-semibold', tHead]}>{item.title}</h3>
+            {item.description && <p class:list={['relative mt-3', tMuted]}>{item.description}</p>}
+            {item.bullets && (
+              <ul class="relative mt-5 grid gap-2.5">
+                {item.bullets.map((b) => (
+                  <li class:list={['flex items-start gap-2.5 text-small', tBody]}>
+                    <IndustryMarker tone="check" small onDark={dark} />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {item.linkLabel && item.href && (
+              <a
+                href={item.href}
+                class="relative mt-auto inline-flex items-center gap-2 pt-6 font-heading text-[0.95rem] font-semibold text-brand-orange"
+              >
+                {item.linkLabel}
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </a>
+            )}
+          </article>
+        ))}
+      </div>
+    </Section>
+  )
+}
+
+{/* ─────────────────────────────── STEPS ─────────────────────────────── */}
+{
+  block.type === 'steps' && (
+    <Section variant={sec} ariaLabelledby={headingId}>
+      <header class="max-w-2xl">
+        {block.eyebrow && <Eyebrow rule={!dark}>{block.eyebrow}</Eyebrow>}
+        <h2 id={headingId} class:list={['text-h2 font-bold', tHead, block.eyebrow && 'mt-4']}>
+          {block.heading}
+        </h2>
+        {block.intro && <p class:list={['mt-5', tMuted]}>{block.intro}</p>}
+      </header>
+
+      <ol class="mt-12 grid gap-6 md:grid-cols-3">
+        {block.steps.map((step, i) => (
+          <li class:list={['flex h-full flex-col rounded-2xl border p-8', card]}>
+            <span
+              class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-orange font-heading text-h4 font-bold tabular-nums text-white"
+              aria-hidden="true"
+            >
+              {i + 1}
+            </span>
+            <h3 class:list={['mt-6 text-h4 font-semibold', tHead]}>{step.title}</h3>
+            {step.description && <p class:list={['mt-2', tMuted]}>{step.description}</p>}
+          </li>
+        ))}
+      </ol>
+    </Section>
+  )
+}
+
+{/* ──────────────────────────── HIGHLIGHT ────────────────────────────── */}
+{
+  block.type === 'highlight' && (
+    <Section variant={sec} ariaLabelledby={block.heading ? headingId : undefined}>
+      <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+        <div class="lg:col-span-5">
+          {block.eyebrow && <Eyebrow rule={!dark}>{block.eyebrow}</Eyebrow>}
+          {block.heading && (
+            <h2 id={headingId} class:list={['text-h2 font-bold', tHead, block.eyebrow && 'mt-4']}>
+              {block.heading}
+            </h2>
+          )}
+          {block.lead && (
+            <p class:list={['text-lead font-medium', tHead, (block.heading || block.eyebrow) && 'mt-5']}>
+              {block.lead}
+            </p>
+          )}
+          {block.closing && <p class:list={['mt-6', tMuted]}>{block.closing}</p>}
+        </div>
+
+        {block.points && (
+          <div class="lg:col-span-7">
+            <ul
+              class:list={[
+                'grid gap-4',
+                block.points.some((p) => p.description) ? 'sm:grid-cols-2' : '',
+              ]}
+            >
+              {block.points.map((point) => (
+                <li class:list={['flex items-start gap-4 rounded-2xl border p-6', card, lift]}>
+                  <IndustryMarker tone="check" onDark={dark} />
+                  <div>
+                    <p class:list={['font-heading font-semibold', tHead]}>{point.title}</p>
+                    {point.description && (
+                      <p class:list={['mt-1 text-small', tMuted]}>{point.description}</p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </Section>
+  )
+}
+
+{/* ─────────────────────────── TESTIMONIAL ───────────────────────────── */}
+{
+  block.type === 'testimonial' && (
+    <Section variant={sec} ariaLabel="Client testimonial">
+      <div class="mx-auto max-w-4xl">
+        <figure
+          class:list={[
+            'relative overflow-hidden rounded-3xl border p-8 shadow-card md:p-12',
+            dark
+              ? 'border-white/15 bg-white/[0.06]'
+              : 'border-brand-orange/15 bg-gradient-to-br from-brand-orange-soft to-surface',
+          ]}
+        >
+          {dark && (
+            <div
+              class="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-brand-orange/20 blur-3xl"
+              aria-hidden="true"
+            />
+          )}
+
+          <svg class="relative h-12 w-12 text-brand-orange" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M9.5 6C6.5 7.5 5 10 5 13v5h6v-6H8c0-2 .8-3.4 2.5-4.3L9.5 6Zm9 0C15.5 7.5 14 10 14 13v5h6v-6h-3c0-2 .8-3.4 2.5-4.3L18.5 6Z" />
+          </svg>
+
+          <blockquote class:list={['relative mt-6 text-h3 font-medium leading-snug', tHead]}>
+            {block.quote}
+          </blockquote>
+
+          <figcaption
+            class:list={[
+              'relative mt-8 flex items-center gap-4 border-t pt-6',
+              dark ? 'border-white/10' : 'border-brand-orange/15',
+            ]}
+          >
+            <span
+              class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-orange font-heading text-base font-bold text-white"
+              aria-hidden="true"
+            >
+              {initials}
+            </span>
+            <span class="leading-tight">
+              <span class:list={['block font-heading font-semibold', tHead]}>{block.name}</span>
+              <span class:list={['text-small', tMuted]}>{block.company}</span>
+            </span>
+          </figcaption>
+        </figure>
+      </div>
+    </Section>
+  )
+}
+
+{/* ──────────────────────────────── FAQ ──────────────────────────────── */}
+{
+  block.type === 'faq' && (
+    <Section variant={sec} ariaLabelledby={headingId}>
+      <div class="mx-auto max-w-3xl">
+        <h2 id={headingId} class:list={['text-center text-h2 font-bold', tHead]}>{block.heading}</h2>
+        <div
+          class:list={[
+            'mt-10 overflow-hidden rounded-2xl border divide-y',
+            dark ? 'border-white/10 divide-white/10' : 'border-border divide-border',
+          ]}
+        >
+          {block.items.map((item) => (
+            <details class="group">
+              <summary
+                class:list={[
+                  'flex cursor-pointer list-none items-center justify-between gap-4 p-6 font-heading font-semibold transition-colors marker:content-none [&::-webkit-details-marker]:hidden',
+                  tHead,
+                  dark ? 'hover:bg-white/[0.03]' : 'hover:bg-surface-2',
+                ]}
+              >
+                {item.question}
+                <span
+                  class:list={[
+                    'flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-transform duration-200 group-open:rotate-45',
+                    dark ? 'border-white/20 text-white/70' : 'border-border text-muted',
+                  ]}
+                  aria-hidden="true"
+                >
+                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>
+                </span>
+              </summary>
+              <p class:list={['px-6 pb-6', tMuted]}>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </Section>
+  )
+}
+
+{/* ──────────────────────────────── CTA ──────────────────────────────── */}
+{
+  block.type === 'cta' && (
+    <Section variant={sec} ariaLabelledby={headingId}>
+      <div class="cta-panel relative overflow-hidden rounded-3xl px-6 py-14 ring-1 ring-white/10 md:px-12 md:py-20">
+        <div
+          class="pointer-events-none absolute -right-16 -top-20 h-72 w-72 rounded-full bg-brand-orange/25 blur-3xl"
+          aria-hidden="true"
+        />
+        <div
+          class="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-brand-orange/10 blur-3xl"
+          aria-hidden="true"
+        />
+        <div class="relative mx-auto max-w-2xl text-center">
+          <span class="mx-auto block h-1 w-10 rounded-full bg-brand-orange" aria-hidden="true" />
+          <h2 id={headingId} class="mt-6 text-h2 font-bold text-white">{block.heading}</h2>
+          {block.intro && <p class="mx-auto mt-4 max-w-xl text-white/75">{block.intro}</p>}
+          {block.bullets && (
+            <ul class="mx-auto mt-7 grid max-w-md gap-3 text-left sm:grid-cols-2">
+              {block.bullets.map((item) => (
+                <li class="flex items-start gap-3">
+                  <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-orange text-white" aria-hidden="true">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </span>
+                  <span class="text-white/85">{item}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {block.body && <p class="mx-auto mt-4 max-w-xl text-white/75">{block.body}</p>}
+          {block.closing && <p class="mt-7 text-lead font-medium text-white">{block.closing}</p>}
+          <div class="mt-8 flex justify-center">
+            <Button href={block.cta.href} variant="primary" size="lg">{block.cta.label}</Button>
+          </div>
+          {block.note && <p class="mt-4 text-small text-white/55">{block.note}</p>}
+        </div>
+      </div>
+    </Section>
+  )
+}
+
+<style>
+  /* Textured navy panel for the CTA — engineered grid + warm gradient so the
+     call-to-action reads as a premium band on either a light or dark section. */
+  .cta-panel {
+    background:
+      radial-gradient(55% 65% at 82% 8%, rgba(241, 90, 41, 0.12), transparent 60%),
+      linear-gradient(160deg, #0a1622 0%, #111827 50%, #011013 100%);
+  }
+
+  .cta-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(85% 80% at 50% 0%, #000 18%, transparent 75%);
+    -webkit-mask-image: radial-gradient(85% 80% at 50% 0%, #000 18%, transparent 75%);
+    pointer-events: none;
+  }
+</style>
